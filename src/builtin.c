@@ -6,159 +6,116 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 00:43:15 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/14 19:05:03 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/06/15 22:23:05 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	built_env(char **env)
+int	builtin_pwd(void)
 {
-	int	i;
+	char	cwd[PATH_MAX];
 
-	i = 0;
-	while (env && env[i])
+	// char *cwd;
+	// cwd = getcwd(NULL, 0);
+	getcwd(cwd, sizeof(cwd));
+	// if (!cwd)
+	// {
+	// 	perror("pwd");
+	// 	return (1);
+	// }
+	printf("%s\n", cwd);
+	// free(cwd);
+	return (0);
+}
+
+int	builtin_env(t_env *env_list)
+{
+	t_env	*tmp;
+
+	tmp = env_list;
+	// pointeur tmp quon initialise avec la tete de la liste
+	while (tmp)
 	{
-		printf("%s\n", env[i]);
-		i++;
+		if (tmp->value)
+			// si variable a une valeur,on affiche son nom et sa valur
+			printf("%s=%s\n", tmp->name, tmp->value);
+		else // sinon on affiche uniquement son nom
+			printf("%s\n", tmp->name);
+		tmp = tmp->next;
 	}
 	return (0);
 }
 
-int	build_echo(char **arg)
+int	builtin_echo(char **args)
 {
 	int	i;
-	int	nline;
+	int	newline;
 
-	i = 0;
-	nline = 0;
-	if (arg[i] && ft_strncmp(arg[i], "-n", 3) == 0)
+	i = 1;
+	newline = 1;
+	if (args[i] && ft_strncmp(args[i], "-n", 5) == 0)
 	{
-		printf("%s", arg[i]);
+		newline = 0;
 		i++;
 	}
-	while (arg[i])
+	while (args[i])
 	{
-		printf("%s", arg[i]);
+		printf("%s", args[i]);
+		if (args[i + 1])
+			printf(" ");
 		i++;
 	}
-	if (nline)
+	if (newline)
 		printf("\n");
 	return (0);
 }
 
-int	build_pwd(void)
+void	error_cd(void)
 {
-	char	*pwd;
+	static char	*oldpwd;
+	char		*cwd;
 
-	pwd = getcwd(NULL, 0);
-	if (!pwd)
+	cwd = getcwd(NULL, 0);
+	if (!oldpwd)
 	{
-		perror("pwd");
-		return (1);
+		printf("oldpwd not set");
+		free(cwd);
+		return ;
 	}
-	printf("%s\n", pwd);
-	free(pwd);
-	return (0);
-}
-
-int	simple_quote(char *input)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	while (input[i])
-	{
-		if (input[i] == '\'')
-			count++;
-		i++;
-	}
-	if (count % 2 != 0)
-	{
-		printf("syntax error: unclosed single quote");
-		return (1);
-	}
-	else
-		return (0);
-}
-int	double_quote(char *input)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	while (input[i])
-	{
-		if (input[i] == '"')
-			count++;
-		i++;
-	}
-	if (count % 2 != 0)
-	{
-		printf("syntax error: unclosed double quote");
-		return (1);
-	}
-	else
-		return (0);
-}
-
-int	built_cd(char *cmd)
-{
-	if (cmd == NULL)
-	{
-		cmd = getenv("HOME");
-		if (!cmd)
-		{
-			printf("syntax error : Home not set");
-			return (1);
-		}
-	}
-	if (chdir(cmd) != 0)
+	printf("%s\n", oldpwd);
+	if (chdir(oldpwd) == -1)
 	{
 		perror("cd");
-		return (1);
+		free(cwd);
+		return ;
 	}
-	return (0);
+	free(cwd);
+	return ;
 }
 
-int	is_valid_exp(char *cmd)
+void	ft_cd(char *path)
 {
-	int	i;
+	static char	*oldpwd;
+	char		*cwd;
 
-	if (!cmd || !cmd[0])
-		return (0);
-	if (!ft_isalpha(cmd[0]) && cmd[0] != '_')
+	cwd = getcwd(NULL, 0);
+	if (!path || !path[0])
 	{
-		ft_putstr_fd("minishell: export: ", STDERR_FILENO);
-		ft_putstr_fd(cmd[0], STDERR_FILENO);
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-		return (0);
+		path = getenv("HOME");
+		if (!path)
+			return (printf("HOME not set"), free(cwd), free(oldpwd));
 	}
-	i = 1;
-	while (cmd[i] && cmd[i] != '=')
+	else if (strcmp(path, "-") == 0)
+		return (error_cd());
+	if (chdir(path) == -1)
 	{
-		if (!ft_isalnum(cmd[i]) && cmd[i] != '_')
-		{
-			ft_putstr_fd("minishell: export: ", STDERR_FILENO);
-			ft_putstr_fd(cmd[i], STDERR_FILENO);
-			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-			return (0);
-		}
-		i++;
+		perror("cd");
+		free(cwd);
+		return ;
 	}
-	return (1);
-}
-
-t_env	*find_env_node(t_env *env, char *name)
-{
-	while (env)
-	{
-		if (ft_strcmp(env->name, name) == 0)
-			return (env);
-		env = env->next;
-	}
-	return (NULL);
+	if (oldpwd)
+		free(oldpwd);
+	oldpwd = cwd;
+	free(cwd);
 }
