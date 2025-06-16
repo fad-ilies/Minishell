@@ -6,7 +6,7 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 00:43:15 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/15 22:23:05 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/06/16 19:55:51 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,4 +118,30 @@ void	ft_cd(char *path)
 		free(oldpwd);
 	oldpwd = cwd;
 	free(cwd);
+}
+
+t_env	*builtin_unset(t_env *env, char *cmd)
+{
+	t_env	*previous;
+	t_env	*current;
+
+	previous = NULL;
+	current = env;
+	while (current)
+	{
+		if (ft_strcmp(current->name, cmd) == 0)
+		{
+			if (previous)
+				previous->next = current->next;
+			else
+				env = current->next;
+			free(current->name);
+			free(current->value);
+			free(current);
+			return (0);
+		}
+		previous = current;
+		current = current->next;
+	}
+	return (env);
 }

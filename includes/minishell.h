@@ -50,12 +50,13 @@ typedef struct s_data
 // expand
 // char				*get_env_value(char *name, t_env *env_list);
 t_env				*create_env_list(char **envp);
-void	add_env_node(t_env **env_list, char *name, char *value);
+void				add_env_node(t_env **env_list, char *name, char *value);
 
 // builtin
 int					builtin_echo(char **args);
 int					builtin_env(t_env *env_list);
 int					builtin_pwd(void);
+t_env				*builtin_unset(t_env *env, char *cmd);
 void				ft_cd(char *path);
 void				exec_builtin(char **args, t_env *env_list);
 int					builtin_export(t_env *env_list, char **cmd);
@@ -72,6 +73,6 @@ void				syntax_special_char(char *input);
 
 // utils
 // int					ft_strcmp(char *s1, char *s2);
-t_env	*free_list(t_env *a);
+t_env				*free_list(t_env *a);
 
 #endif

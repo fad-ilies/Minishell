@@ -6,7 +6,7 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 22:18:45 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/15 22:51:58 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/06/16 19:54:14 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,6 @@ void	exec_builtin(char **args, t_env *env_list)
 		ft_cd(args[1]);
 	if (ft_strncmp(args[0], "export", 7) == 0)
 		builtin_export(env_list, args);
+	if (ft_strncmp(args[0], "unset", 6) == 0)
+		builtin_unset(env_list, args[1]);
 }
