@@ -60,6 +60,7 @@ t_env				*builtin_unset(t_env *env, char *cmd);
 void				ft_cd(char *path);
 void				exec_builtin(char **args, t_env *env_list);
 int					builtin_export(t_env *env_list, char **cmd);
+void				builtin_exit(char **args);
 
 // caracteres
 int					are_double_quotes_closed(char *input);
