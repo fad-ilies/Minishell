@@ -6,7 +6,7 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 17:06:07 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/16 00:23:24 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/06/22 22:01:26 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,12 @@ int	is_valid_exp(char *cmd)
 
 	if (!cmd || !cmd[0])
 		return (0);
+	printf("cmd[0]: %c\n", cmd[0]);
 	if (!ft_isalpha(cmd[0]) && cmd[0] != '_')
 	{
 		ft_putstr_fd("minishell: export: ", STDERR_FILENO);
 		ft_putstr_fd(cmd, STDERR_FILENO);
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+		ft_putstr_fd("': not a valid identifier2\n", STDERR_FILENO);
 		return (0);
 	}
 	i = 1;
@@ -126,8 +127,8 @@ void	add_or_replace(t_env **env, char *cmd)
 		free(name);
 		return ;
 	}
-    else
-        add_env_node(env, name, value);
+	else
+		add_env_node(env, name, value);
 }
 
 void	export_sorted(char **env_cpy, int len_env)
@@ -215,12 +216,12 @@ void	print_export(char **env_cpy)
 	}
 }
 
-int		builtin_export(t_env *env_list, char **cmd)
+int	builtin_export(t_env *env_list, char **cmd)
 {
-	int	i;
-	int len;
-	char **cpy_env;
-	
+	int		i;
+	int		len;
+	char	**cpy_env;
+
 	i = 1;
 	len = 0;
 	if (!cmd[1])
@@ -234,12 +235,8 @@ int		builtin_export(t_env *env_list, char **cmd)
 	}
 	else
 	{
-		while (cmd[i])
-		{
-			if (is_valid_exp(cmd[i]))
-				add_or_replace(&env_list, cmd[i]);
-			i++;
-		}
+		if (is_valid_exp(cmd[i]))
+			add_or_replace(&env_list, cmd[i]);
 	}
 	return (1);
 }
