@@ -14,6 +14,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <signal.h>
 
 typedef struct s_env
 {
@@ -25,30 +26,16 @@ typedef struct s_env
 typedef struct s_data
 {
 	t_env			*env;
+	char			*oldpwd;
 }					t_data;
-// structure qui comporte:
 
-// list = type de variable pour contenir
-//          ex. char **, linked list avec char * dedans ou quoi
+typedef struct s_cmd
+{
+	char			**envp;
+	char			**args;
 
-// structure qui comporte une list des commande qui soit une structure elle meme
-// qui comporte tous ce dont elle a besoin
-//
+}					t_cmd;
 
-// minishell: ls -l -o | wc -l | prout -1
-
-// struc->cmdName == ls
-// struc->args[0] == -l
-// struc->args[1] == -o
-// struc = struc->next
-// struc->cmdName == wc
-// struc->args[0] == -l
-// struc->args[1] == existe pas
-// struc = struc->next
-// struc->cmdName == prout
-
-// expand
-// char				*get_env_value(char *name, t_env *env_list);
 t_env				*create_env_list(char **envp);
 void				add_env_node(t_env **env_list, char *name, char *value);
 
@@ -58,9 +45,10 @@ int					builtin_env(t_env *env_list);
 int					builtin_pwd(void);
 t_env				*builtin_unset(t_env *env, char *cmd);
 void				ft_cd(char *path);
-void				exec_builtin(char **args, t_env *env_list);
+void				exec_builtin(char **args, t_env *env_list, char *input);
 int					builtin_export(t_env *env_list, char **cmd);
-void				builtin_exit(char **args);
+void				builtin_exit(t_env *env_list, char **args, char *input);
+void				cleanup(t_env *env_list, char **args, char *input);
 
 // caracteres
 int					are_double_quotes_closed(char *input);
@@ -75,5 +63,7 @@ void				syntax_special_char(char *input);
 // utils
 // int					ft_strcmp(char *s1, char *s2);
 t_env				*free_list(t_env *a);
+// pipe
+int					is_quote_closed(char *input);
 
 #endif

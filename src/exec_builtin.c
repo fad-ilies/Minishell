@@ -6,13 +6,13 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 22:18:45 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/17 22:53:02 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/06/30 23:30:19 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	exec_builtin(char **args, t_env *env_list)
+void	exec_builtin(char **args, t_env *env_list, char *input)
 {
 	if (ft_strncmp(args[0], "pwd", 4) == 0)
 		builtin_pwd();
@@ -27,5 +27,5 @@ void	exec_builtin(char **args, t_env *env_list)
 	if (ft_strncmp(args[0], "unset", 6) == 0)
 		builtin_unset(env_list, args[1]);
 	if (ft_strncmp(args[0], "exit", 5) == 0)
-		builtin_exit(args);
+		builtin_exit(env_list, args, input);
 }
