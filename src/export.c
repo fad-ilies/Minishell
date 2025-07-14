@@ -6,7 +6,7 @@
 /*   By: ifadhli <ifadhli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 17:06:07 by ifadhli           #+#    #+#             */
-/*   Updated: 2025/06/30 23:27:02 by ifadhli          ###   ########.fr       */
+/*   Updated: 2025/07/14 16:23:19 by ifadhli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,9 +354,14 @@ char	**cpy_env_to_tab(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		tmp_egal = ft_strjoin(tmp->name, "=");
-		tab[i] = ft_strjoin(tmp_egal, tmp->value);
-		free(tmp_egal);
+		if (tmp->value)
+		{
+			tmp_egal = ft_strjoin(tmp->name, "=");
+			tab[i] = ft_strjoin(tmp_egal, tmp->value);
+			free(tmp_egal);
+		}
+		else
+			tab[i] = ft_strdup(tmp->name);
 		i++;
 		tmp = tmp->next;
 	}
